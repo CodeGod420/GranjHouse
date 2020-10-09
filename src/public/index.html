@@ -2,37 +2,68 @@
 	<head>
 		<title>My first three.js app</title>
 		<style>
-			body { margin: 0; }
+			body { margin: 0; height: 100vh; }
 			canvas { display: block; }
 		</style>
 	</head>
 	<body>
 		<script src="https://threejs.org/build/three.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.5.1/gsap.min.js"></script>
+		<script  src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.1/TimelineMax.min.js"></script>
 		<script>
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
-			var renderer = new THREE.WebGLRenderer();
+			var renderer = new THREE.WebGLRenderer({antialias:true});
+			renderer.setClearColor('e5e5e5')
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
 
-			var geometry = new THREE.BoxGeometry();
-			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+			window.addEventListener('resize',()=>{
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				camera.aspect=window.innerWidth/ window.innerHeight;
+				camera.updateProjectionMatrix();
+			}
+			)
+			var geometry = new THREE.BoxGeometry( );
+			var material = new THREE.MeshLambertMaterial( { color: 0xFFCC00 } );
 			var cube = new THREE.Mesh( geometry, material );
 			scene.add( cube );
 
 			camera.position.z = 5;
 
-			var animate = function () {
-				requestAnimationFrame( animate );
 
-				cube.rotation.x += 0.01;
-				cube.rotation.y += 0.01;
+			var light = new THREE.PointLight(0xFFFFFF, 1, 500)
+			light.position.set(10, 0, 10);
+			scene.add(light)
 
-				renderer.render( scene, camera );
-			};
 
-			animate();
+			var render= function(){
+				requestAnimationFrame(render)
+				renderer.render(scene,camera)
+			}
+			var raycaster= new THREE.Raycaster();
+			var mouse= new THREE.Vector2();
+			
+			
+			function onMousemove(event){
+				event.preventDefault();
+				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+            	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1
+				raycaster.setFromCamera(mouse,camera);
+				var intersects= raycaster.intersectObjects(scene.children,true)
+				for(var i = 0; i< intersects.lenght; i++){
+						intersects[i].object.material.color.set(0xff0000)
+						console.log("clickeadooo")
+				}	
+			}
+			
+			window.addEventListener('click', onMousemove)
+
+			render();
+			
+
+			
 		</script>
 	</body>
 </html>
