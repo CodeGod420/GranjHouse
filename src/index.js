@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
+const { mongoose } = require('./database');
 const app = express();
 
 //Settings
@@ -8,6 +9,7 @@ app.set('port', process.env.PORT || 3000); //guardar valor puerto de la nube o u
 
 //Middlerwares
 app.use(morgan('dev')); //para ver los requerimientos api en la consola
+app.use(express.json());
 
 //Routes
 app.use('/api/tasks', require('./routes/task.routes'));
